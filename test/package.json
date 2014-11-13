@@ -1,0 +1,17 @@
+{
+  "name": "instalib-test",
+  "version": "1.0.0",
+  "description": "Tests for Instalib",
+  "main": "test.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "author": "Clemente Gomez",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.10.2",
+    "jade": "^1.7.0",
+    "nodemon": "^1.2.1"
+  }
+}
