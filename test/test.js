@@ -17,7 +17,11 @@ app
 		});
 	})
 	.get("/cb", function(req, res){
+		instagram.getToken(req.query.code).then(function(result){
+			res.send(JSON.parse(result));
+		}, function(error){
+			res.send(error);
+		});
 
-		res.send(instagram.getToken(req.query.code));
 	})
 	.listen(3000);

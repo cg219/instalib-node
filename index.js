@@ -3,25 +3,19 @@ var url = require("url");
 var query = require("querystring");
 require('es6-promise').polyfill();
 
-function request(href, method, extras, context){
+function request(href, method, body, context){
 	var self = context;
-
 	var promise = new Promise(function(resolve, reject){
 
 		var options = {
 			host: url.parse(href).host,
-			port: 80,
 			path: url.parse(href).path,
-			method: method || 'GET'
+			method: method || 'GET',
+			headers: {
+				'Content-type': 'application/json',
+				'Content-length': body.length
+			}
 		}
-
-		var data = options.method == "POST" ? query.stringify({
-			client_id : self.config.clientID,
-			client_secrect: self.config.secret,
-			grant_type: "authorization_code",
-			redirect_uri: self.config.responseURL,
-			code: extras.code
-		}) : "";
 
 		var req = https.request(options, function(res){
 			var chunks = '';
@@ -36,14 +30,15 @@ function request(href, method, extras, context){
 					resolve(chunks);
 				}
 			})
-		})
+		});
+
 
 		req.on("error", function(error){
 			reject(error);
 		})
 
 		if( options.method == "POST" ){
-			req.write(data);
+			req.write(body);
 		}
 
 		req.end();
@@ -73,7 +68,7 @@ Instagram.prototype.apis = function(endpoint, options) {
 
 	var urls = {
 		authorize : 'https://instagram.com/oauth/authorize/?client_id=' + self.config.clientID + '&redirect_uri=' + self.config.responseURL + '&response_type=code',
-		token : 'https://api.instagram.com/oauth/access_token/',
+		token : 'https://api.instagram.com/oauth/access_token',
 		popular : 'https://api.instagram.com/v1/media/popular',
 		user : 'https://api.instagram.com/v1/users/{{id}}',
 		userFeed : 'https://api.instagram.com/v1/users/self/feed',
@@ -108,11 +103,20 @@ Instagram.prototype.authorize = function(scopes) {
 
 Instagram.prototype.getToken = function(code){
 	var self = this;
-	request(this.apis("token"), "POST", {code: code}, self)
+
+	var data = query.stringify({
+		client_id : self.config.clientID,
+		client_secret: self.config.secret,
+		grant_type: "authorization_code",
+		redirect_uri: self.config.responseURL,
+		code: code
+	});
+
+	request(this.apis("token"), "POST", data, self)
 		.then(function(result){
-			console.log("Hi")
+			res.send(JSON.parse(result));
 		}, function(error){
-			console.log(error)
+			res.send(error);
 		});
 }
 
