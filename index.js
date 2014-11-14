@@ -224,11 +224,28 @@ Instagram.prototype.getToken = function(code){
 	Options:
 	
 	Required
-	ID: Id of the Media being liked/disliked
+	id: ID of the Media being liked/disliked
+
+	Optional
+	action: Default is 'list' which returns all likes for selected media. Other possible values are 'set' and 'delete' which like and dislike selected media respectively.
 
 */
 Instagram.prototype.like = function(options) {
-	
+	var self = this;
+	var _options = _extend({
+			action: 'list'
+		}, options);
+	var _data = _extend({
+			access_token: self.config.accessToken
+		}, options.data);
+
+	_options.data = _data;
+
+	// switch(_options.action){
+	// 	case 'list':
+			
+	// }
+
 };
 
 module.exports = new Instagram();
